@@ -1,0 +1,98 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical">
+
+    <!--添加正真的ViewPlayer和控制器-->
+    <FrameLayout
+        android:id="@+id/fl_video_player_container"
+        android:layout_width="match_parent"
+        android:layout_height="205dp"
+        android:visibility="visible"
+        android:background="@android:color/black">
+
+
+
+
+    </FrameLayout>
+
+    <!--播放按钮-->
+    <!--<LinearLayout
+        android:id="@+id/ll_video_view_play_layout"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:gravity="center"
+        android:orientation="horizontal"
+        android:visibility="visible"
+        >
+
+        <ImageView
+            android:id="@+id/iv_video_play_btn"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:scaleType="centerCrop"
+            android:src="@drawable/video_view_button_play_icon" />
+
+
+    </LinearLayout>-->
+
+    <!--加载loading-->
+    <LinearLayout
+        android:id="@+id/ll_video_loading"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:gravity="center"
+        android:orientation="vertical"
+        android:visibility="gone">
+
+        <ProgressBar
+            style="?android:attr/progressBarStyleInverse"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+
+            />
+    </LinearLayout><!--换进度条    android:indeterminateDrawable=""-->
+    <!--底部进度条-->
+    <ProgressBar
+        android:id="@+id/pb_video_bottom_progress"
+        style="?android:attr/progressBarStyleHorizontal"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom"
+        android:max="100"
+        android:maxHeight="2dp"
+        android:minHeight="2dp"
+        android:progressDrawable="@drawable/video_view_bottom_progressbar_background"
+        android:visibility="gone" />
+
+    <!--加载错误布局-->
+    <LinearLayout
+        android:id="@+id/ll_video_error_layout"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@android:color/black"
+        android:clickable="true"
+        android:gravity="center"
+        android:orientation="horizontal"
+        android:visibility="gone">
+
+        <ImageView
+            android:id="@+id/iv_video_error_icon"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/video_error_icon1" />
+
+        <View
+            android:layout_width="10dp"
+            android:layout_height="1dp" />
+
+        <TextView
+            android:id="@+id/tv_video_error_text"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textColor="@android:color/white"
+            android:textSize="16sp"
+            android:text="加载失败..."/>
+    </LinearLayout>
+</FrameLayout>

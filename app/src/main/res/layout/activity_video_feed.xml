@@ -1,17 +1,34 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:gravity="center"
+    android:orientation="horizontal"
    >
 
-    <FrameLayout
+    <!--RecyclerView-->
+    <com.ketu.video.views.views.recycleview.TranslucentRecyclerView
+        android:id="@+id/recyleview"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+    </com.ketu.video.views.views.recycleview.TranslucentRecyclerView>
+    <!--<FrameLayout
         android:id="@+id/fl_video_player"
         android:layout_width="match_parent"
         android:layout_height="205dp"
         android:background="#999999"
         android:orientation="vertical">
 
-    </FrameLayout>
+    </FrameLayout>-->
+    <!--标题栏-->
+    <com.ketu.video.views.views.recycleview.TranslucentActionBar
+        android:id="@+id/actionbar"
 
-</LinearLayout>
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+    </com.ketu.video.views.views.recycleview.TranslucentActionBar>
+
+
+</RelativeLayout>

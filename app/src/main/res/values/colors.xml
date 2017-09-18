@@ -3,4 +3,16 @@
     <color name="colorPrimary">#3F51B5</color>
     <color name="colorPrimaryDark">#303F9F</color>
     <color name="colorAccent">#FF4081</color>
+
+
+    <!--标题栏-->
+    <color name="actionbar_background">#000000</color>
+    <color name="actionbar_title_color">#ffffff</color>
+
+
+
+    <!--VideoFeed颜色-->
+    <color name="comment_color">#ff0000</color>
+    <color name="title_color">#ffffff</color>
+
 </resources>

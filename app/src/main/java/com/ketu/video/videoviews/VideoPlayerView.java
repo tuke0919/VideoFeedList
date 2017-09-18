@@ -1,4 +1,4 @@
-package com.ketu.video.views;
+package com.ketu.video.videoviews;
 
 import android.content.Context;
 import android.graphics.Color;
@@ -19,7 +19,6 @@ import android.widget.TextView;
 
 import com.ketu.video.R;
 import com.pili.pldroid.player.AVOptions;
-import com.pili.pldroid.player.IMediaController;
 import com.pili.pldroid.player.PLMediaPlayer;
 import com.pili.pldroid.player.widget.PLVideoTextureView;
 import com.pili.pldroid.player.widget.PLVideoView;

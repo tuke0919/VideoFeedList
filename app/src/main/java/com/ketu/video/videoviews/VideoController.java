@@ -1,4 +1,4 @@
-package com.ketu.video.views;
+package com.ketu.video.videoviews;
 
 import android.app.Activity;
 import android.content.Context;

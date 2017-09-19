@@ -15,8 +15,8 @@ public class VideoFeedBean extends BaseBean{
     public String id;
     /*video的链接*/
     public String videoUrl;
-    /*暂无用*/
-    public String video_img_url;
+    /*缩略图*/
+    public int video_thumb_pic;
 
     /*Video文字描述*/
     public String title;

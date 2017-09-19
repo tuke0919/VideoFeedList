@@ -1,19 +1,22 @@
 package com.ketu.video.adapter;
 
 import android.content.Context;
+import android.graphics.Bitmap;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.FrameLayout;
 import android.widget.ImageView;
-import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 
+import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.ketu.video.R;
 import com.ketu.video.Utils.ApiConstants;
+import com.ketu.video.Utils.FileUtil;
+import com.ketu.video.Utils.VideoUtil;
 import com.ketu.video.bean.VideoFeedBean;
 import com.ketu.video.views.views.roundimageview.CircleImageView;
 
@@ -131,11 +134,28 @@ public class RecycleViewAdapter extends RecycleViewBaseAdapter<VideoFeedBean> {
            /*刷新数据*/
            Log.e("onRefreshView","----------position--"+position+"--------："+ viewMask.getVisibility());
 
+          /* if (videoFeedBean.video_thumb_pic == null){
+               Log.e("frame","video路径："+videoFeedBean.videoUrl);
+               Bitmap bitmap = VideoUtil.getFirstVideoFrame(videoFeedBean.videoUrl);
+               String thumbPic =FileUtil.getVideoThumbPicPath(context,videoFeedBean.videoUrl);
+               Log.e("frame","videothumb路径："+thumbPic);
+               VideoUtil.saveBitmapToFile(bitmap,thumbPic);
+               videoFeedBean.video_thumb_pic = thumbPic;
+           }*/
+
+           Glide.with(context)
+                   .load(videoFeedBean.video_thumb_pic)
+                   .diskCacheStrategy(DiskCacheStrategy.ALL)
+                   .centerCrop()
+                   .into(firstFrameImage);
+
+
        }
 
         @Override
         public void onClick(View v) {
             switch (v.getId()) {
+
 
             }
 
@@ -167,6 +187,7 @@ public class RecycleViewAdapter extends RecycleViewBaseAdapter<VideoFeedBean> {
             listener = null;
         }
     }
+
 
 
 }

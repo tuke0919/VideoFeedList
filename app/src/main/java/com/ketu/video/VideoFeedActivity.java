@@ -2,11 +2,10 @@ package com.ketu.video;
 
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
-import android.widget.FrameLayout;
-
 import com.ketu.video.Utils.ApiConstants;
 import com.ketu.video.adapter.RecycleViewAdapter;
 import com.ketu.video.bean.VideoFeedBean;
+import com.ketu.video.Utils.VideoUtil;
 import com.ketu.video.videoviews.VideoPlayerView;
 import com.ketu.video.views.views.recycleview.ActionBarClickListener;
 import com.ketu.video.views.views.recycleview.BaseActivity;
@@ -36,10 +35,16 @@ public class VideoFeedActivity extends BaseActivity implements ActionBarClickLis
     /*布局管理器*/
     public LinearLayoutManager layoutManager;
 
-    public String videoPath = "http://rmrbtest-image.peopleapp.com/upload/video/201707/1499914158feea8c512f348b4a.mp4";
+    //public String videoPath = "http://rmrbtest-image.peopleapp.com/upload/video/201707/1499914158feea8c512f348b4a.mp4";
+
+
+
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+
 
     }
 
@@ -68,6 +73,7 @@ public class VideoFeedActivity extends BaseActivity implements ActionBarClickLis
         recyclerView.setAdapter(adapter);
         recyclerView.setLayoutManager(layoutManager);
 
+
     }
 
     /**
@@ -79,6 +85,8 @@ public class VideoFeedActivity extends BaseActivity implements ActionBarClickLis
         for (int i = 0; i < 10; i++) {
             VideoFeedBean videoFeedItem = new VideoFeedBean();
             videoFeedItem.type = ApiConstants.TYPE_VIDEO_FEED;
+            videoFeedItem.videoUrl = VideoUtil.videoUrls[i];
+            videoFeedItem.video_thumb_pic = VideoUtil.videoThumbPics[i];
             videoFeedDataList.add(videoFeedItem);
         }
 

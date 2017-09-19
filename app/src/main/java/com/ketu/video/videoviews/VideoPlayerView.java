@@ -156,13 +156,13 @@ public class VideoPlayerView extends FrameLayout implements
         if (videoPlayer.getParent() != null) {
             ((ViewGroup) (videoPlayer.getParent())).removeView(videoPlayer);
         }
+        /*添加真正的播放器*/
         videoPlayerLayout.addView(videoPlayer);
-
+        /*添加播放按钮*/
         videoPlayerLayout.addView(videoPlayButtonLayout);
-
-
+        /*添加控制器*/
         videoPlayerLayout.addView(videoController,new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
-        videoController.setVisibility(INVISIBLE);
+
 
         videoPlayerLayout.getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
             @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN)
@@ -259,8 +259,18 @@ public class VideoPlayerView extends FrameLayout implements
             videoPlayer.setVideoPath(videoPath);
             videoPlayer.start();
          }
-
     }
+
+    /**
+     * 自动播放，跳转到具体的位置，1，正真的视频跳转，2，控制器底部条跳转
+     * @param position
+     */
+    public void seekToPositionOnAutoPlay(long position){
+
+        videoController.seekToOnAutoPlay(position);
+    }
+
+
 
     /**
      * 手动暂停

@@ -6,6 +6,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
@@ -82,6 +83,7 @@ public class RecycleViewAdapter extends RecycleViewBaseAdapter<VideoFeedBean> {
         /*第一帧图像，播放按钮*/
         public ImageView firstFrameImage, btnPlay;
 
+        public FrameLayout videoPlayerContainer;
 
         /*标题内容*/
         public TextView tvTitle;
@@ -108,6 +110,8 @@ public class RecycleViewAdapter extends RecycleViewBaseAdapter<VideoFeedBean> {
             firstFrameLayout = findViewById(R.id.fl_first_frame_layout);
             firstFrameImage = findViewById(R.id.iv_first_frame_image);
             btnPlay = findViewById(R.id.btn_play);
+
+            videoPlayerContainer = findViewById(R.id.fl_video_player);
 
             tvTitle = findViewById(R.id.tv_title);
 
@@ -142,6 +146,9 @@ public class RecycleViewAdapter extends RecycleViewBaseAdapter<VideoFeedBean> {
                VideoUtil.saveBitmapToFile(bitmap,thumbPic);
                videoFeedBean.video_thumb_pic = thumbPic;
            }*/
+
+           /*holder复用时，设置蒙版*/
+           viewMask.setVisibility(View.VISIBLE);
 
            Glide.with(context)
                    .load(videoFeedBean.video_thumb_pic)

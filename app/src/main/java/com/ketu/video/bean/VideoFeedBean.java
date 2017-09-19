@@ -28,7 +28,7 @@ public class VideoFeedBean extends BaseBean{
     public String zansCounts;
 
     /*Video长按*/
-    public long videoProgress;
+    public long videoProgress = 0;
     /*播放时间*/
-    public long duration;
+    public long duration = 0;
 }

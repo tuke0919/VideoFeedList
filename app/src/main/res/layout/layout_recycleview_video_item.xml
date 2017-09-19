@@ -11,7 +11,7 @@
         android:layout_height="wrap_content">
       <!--视频播放器-->
       <FrameLayout
-         android:id="@+id/video_view"
+         android:id="@+id/video_view_layout"
          android:layout_width="match_parent"
          android:layout_height="wrap_content">
 
@@ -56,8 +56,8 @@
         <FrameLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_below="@+id/video_view"
-            android:background ="#6666"
+            android:layout_below="@+id/video_view_layout"
+            android:background ="#B2000000"
             >
           <RelativeLayout
             android:layout_width="match_parent"

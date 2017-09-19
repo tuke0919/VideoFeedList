@@ -20,6 +20,7 @@ import android.widget.TextView;
 import com.ketu.video.R;
 import com.pili.pldroid.player.IMediaController;
 
+import java.text.DecimalFormat;
 import java.util.Locale;
 
 /**
@@ -46,6 +47,7 @@ public class VideoController extends FrameLayout implements IMediaController,Vie
     /*播放暂停按钮*/
     public ImageView videoPlayButton;
     public LinearLayout controllerBottomLayout;
+
     public TextView videoCurrenTime;
     public SeekBar  videoSeekBar;
     public TextView videoTotalTime;
@@ -59,7 +61,7 @@ public class VideoController extends FrameLayout implements IMediaController,Vie
     private MediaPlayerControl mediaPlayer;
 
     /*公共数据*/
-    public long totalTime;//ms
+    public long duration;//ms
     public AudioManager audioManager;
 
 
@@ -242,6 +244,24 @@ public class VideoController extends FrameLayout implements IMediaController,Vie
    }
 
 
+    /**
+     *自动继续播放，跳转到具体的位置，1，正真的视频跳转，2，控制器底部条跳转
+     * @param position
+     */
+   public void seekToOnAutoPlay(long position){
+        if (mediaPlayer == null){
+            return;
+        }
+       mediaPlayer.seekTo(position);
+
+       float percent = (float) ((double) position / (double) duration);
+       DecimalFormat fnum = new DecimalFormat("##0.0");
+       float c_percent = 0;
+       c_percent = Float.parseFloat(fnum.format(percent));
+       videoSeekBar.setProgress((int) (c_percent * 100));
+
+   }
+
 
     /**
      * 更新播放按钮的背景
@@ -277,6 +297,7 @@ public class VideoController extends FrameLayout implements IMediaController,Vie
         long position = mediaPlayer.getCurrentPosition();
         long duration = mediaPlayer.getDuration();
         int percent = mediaPlayer.getBufferPercentage();
+
         /*更新seekbar*/
         if (videoSeekBar != null){
             if (duration > 0) {
@@ -286,14 +307,14 @@ public class VideoController extends FrameLayout implements IMediaController,Vie
             videoSeekBar.setSecondaryProgress(percent * 10);
         }
 
-        totalTime = duration;
+        this.duration = duration;
 
-        if (totalTime < position) {
-            totalTime = position;
+        if (this.duration < position) {
+            this.duration = position;
         }
         /*更新总时间*/
         if (videoTotalTime != null) {
-            videoTotalTime.setText(getVideoCurrentTime(totalTime));
+            videoTotalTime.setText(getVideoCurrentTime(this.duration));
         }
         /*更新当前时间*/
         if (videoCurrenTime != null) {
@@ -325,7 +346,7 @@ public class VideoController extends FrameLayout implements IMediaController,Vie
                return;
            }
            long arg = Long.parseLong(String.valueOf(progress));
-           final long newposition = (totalTime*arg)/1000L;
+           final long newposition = (duration *arg)/1000L;
 
            /*实时更新Video*/
            if (realTimeUpdateVideo){
@@ -384,7 +405,7 @@ public class VideoController extends FrameLayout implements IMediaController,Vie
     @Override
     public void onStopTrackingTouch(SeekBar seekBar) {
 
-        long all =  totalTime * seekBar.getProgress();
+        long all =  duration * seekBar.getProgress();
         long currentPosition = all / 1000L;
 
         isSeekBarDragging = false;
@@ -397,7 +418,7 @@ public class VideoController extends FrameLayout implements IMediaController,Vie
             mediaPlayer.start();
         }
         /*滑到最末尾*/
-        if (currentPosition >= totalTime){
+        if (currentPosition >= duration){
             if (listener != null){
                 listener.onSeekBarStopTracking(currentPosition);
                 handler.removeCallbacks(realTimeUpdateVideoRunnable);
@@ -449,6 +470,8 @@ public class VideoController extends FrameLayout implements IMediaController,Vie
 
         /*更新videoPlayerView底部进度条*/
         void onVideoPlayButtonClickUpdateBottomProgress(long position, long duration, int percent);
+
+
         /*控制器播放暂停更新VideoPlayerView的播放按钮*/
         void onShowViewPlayViewButton(boolean b);
 
@@ -458,7 +481,6 @@ public class VideoController extends FrameLayout implements IMediaController,Vie
     public void setOnVideoControllerListener(OnVideoControllerListener listener){
         this.listener = listener;
     }
-
 
 
     /**

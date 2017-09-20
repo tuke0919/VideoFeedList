@@ -23,6 +23,8 @@ import com.pili.pldroid.player.PLMediaPlayer;
 import com.pili.pldroid.player.widget.PLVideoTextureView;
 import com.pili.pldroid.player.widget.PLVideoView;
 
+import java.util.Locale;
+
 /**
  * <p/>
  * 功能 :播放器View
@@ -199,7 +201,6 @@ public class VideoPlayerView extends FrameLayout implements
 
         videoPlayButtonLayout.addView(videoPlayButton);
 
-
         return videoPlayButtonLayout;
 
     }
@@ -250,7 +251,7 @@ public class VideoPlayerView extends FrameLayout implements
         }*/
 
         try {
-            Log.e("onPrepared","开始播放");
+            Log.e("onPrepared","onStart：开始播放");
             videoPlayer.start();
 
          } catch (Exception e) { //若遇到异常，重新开始播放
@@ -271,6 +272,21 @@ public class VideoPlayerView extends FrameLayout implements
     }
 
 
+    /**
+     * 滑动停止上一个Item播放
+     */
+    public void scrollAutoStopPlayer() {
+        // videoView 不等于 null 且正在播放的时候 停止
+        if (videoPlayer != null && isPlaying()) {
+            videoPlayer.pause();
+            if (videoBottomProgressBar != null) {
+                videoBottomProgressBar.setVisibility(GONE);
+            }
+            videoPlayer.setVolume(0f, 0f);
+        }
+    }
+
+
 
     /**
      * 手动暂停
@@ -288,7 +304,7 @@ public class VideoPlayerView extends FrameLayout implements
      * true 正在播放，false 暂停
      * @return
      */
-    public boolean isPlayingOrPause(){
+    public boolean isPlaying(){
 
         return videoPlayer.isPlaying();
 
@@ -342,7 +358,29 @@ public class VideoPlayerView extends FrameLayout implements
                 break;
         }
         Log.e("onPrepared", "onInfo: "+ msg);
+        Log.e("onPrepared","进度回调---当前进度:"+getVideoCurrentTime(videoPlayer.getCurrentPosition())+"\n"+"总时间："+getVideoCurrentTime(videoPlayer.getDuration()));
+        /*跟踪播放器进度*/
+        listener.onTrackVideoPlayerProgress(videoPlayer.getCurrentPosition(),videoPlayer.getDuration());
+
         return false;
+    }
+
+    /**
+     * 根据进度计算Video播放的当前时间
+     * @param newposition
+     * @return
+     */
+    public  String  getVideoCurrentTime(long newposition){
+
+        int totalSeconds = (int) (newposition / 1000);
+        int seconds = totalSeconds%60;
+        int minutes = (totalSeconds/60)%60;
+        int hours = totalSeconds /3600;
+        if (hours > 0){
+            return String.format(Locale.US, "%02d:%02d:%02d", hours, minutes, seconds).toString();
+        }else {
+            return String.format(Locale.US, "%02d:%02d", minutes, seconds).toString();
+        }
     }
 
     /**
@@ -469,4 +507,21 @@ public class VideoPlayerView extends FrameLayout implements
             case R.id.ll_video_error_layout:break;
         }
     }
+
+
+    /*
+    * VideoPlayerView监听器
+    *
+    * */
+
+    public interface OnVideoPlayerViewListener {
+        /*跟踪播放器进度*/
+        void onTrackVideoPlayerProgress(long currentPosition,long duration);
+    }
+    public  OnVideoPlayerViewListener listener;
+    public void setOnVideoPlayerViewListener(OnVideoPlayerViewListener listener){
+        this.listener = listener;
+    }
+
+
 }

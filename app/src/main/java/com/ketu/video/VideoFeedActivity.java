@@ -24,6 +24,8 @@ import com.ketu.video.views.views.recycleview.TranslucentRecyclerView;
 
 import java.util.ArrayList;
 
+import javax.xml.datatype.Duration;
+
 
 /**
  * <p/>
@@ -34,7 +36,7 @@ import java.util.ArrayList;
  */
 
 
-public class VideoFeedActivity extends BaseActivity implements ActionBarClickListener {
+public class VideoFeedActivity extends BaseActivity implements ActionBarClickListener,VideoPlayerView.OnVideoPlayerViewListener{
 
     /*全局的视频播放器*/
     public VideoPlayerView videoPlayerView;
@@ -59,8 +61,20 @@ public class VideoFeedActivity extends BaseActivity implements ActionBarClickLis
     public RecyclerView.ViewHolder previousHolder;
     /*当前亮起的item*/
     public RecyclerView.ViewHolder currentHolder;
-    /*当前亮起的position*/
-    public int currentPosition;
+
+    /*亮起的Item在屏幕内的位置*/
+    public int indexInScreen = 0;
+    /*亮起的Item在适配器的位置*/
+    public int currentIndex = 0;
+    /*播放器的位置*/
+    public int playerIndex = 0;
+
+    /*播放器当前进度和总时间*/
+    public long currentPosition;
+    public long duration ;
+
+    public boolean maskStatusChanged = false;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -122,7 +136,8 @@ public class VideoFeedActivity extends BaseActivity implements ActionBarClickLis
     protected void initListeners() {
       /*设置滑动监听器*/
       recyclerView.setOnScrollListener(new RecyclerViewScrollListener());
-
+        /*设置播放器监听器*/
+        videoPlayerView.setOnVideoPlayerViewListener(this);
 
     }
 
@@ -138,13 +153,23 @@ public class VideoFeedActivity extends BaseActivity implements ActionBarClickLis
 
 
     /**
+     * 跟踪播放器进度
+     *
+     */
+    @Override
+    public void onTrackVideoPlayerProgress(long currentPosition, long duration) {
+
+        this.currentPosition =currentPosition;
+        this.duration = duration;
+    }
+
+
+    /**
      * RecyclerView滑动监听器
      */
     public class RecyclerViewScrollListener extends OnScrollListener{
 
-        public RecyclerViewScrollListener() {
-
-        }
+        public RecyclerViewScrollListener() {}
 
         @Override
         public void onScrollStateChanged(RecyclerView recyclerView, int newState) {
@@ -155,8 +180,8 @@ public class VideoFeedActivity extends BaseActivity implements ActionBarClickLis
                     Log.e("scroll","----onScrollStateChanged-----SCROLL_STATE_IDLE");
 
                     scrollState = false;
-                    //滑动停止和松开手指时，调用此方法 进行播放
-                    addVideoPlayerAndPlayVideo();
+                    //滑动停止且松开手指时，调用此方法 进行播放
+                    //addVideoPlayerAndPlayVideo();
                     break;
                 case RecyclerView.SCROLL_STATE_DRAGGING://用户用手指滚动
 
@@ -210,6 +235,11 @@ public class VideoFeedActivity extends BaseActivity implements ActionBarClickLis
           if (currentHolder == null || videoPlayerView ==null){
                return;
           }
+          /*在播放不执行*/
+          if(videoPlayerView.isPlaying()){
+              return;
+          }
+
           if (currentHolder instanceof RecycleViewAdapter.VideoFeedHolder){
               RecycleViewAdapter.VideoFeedHolder currentVideoHolder = (RecycleViewAdapter.VideoFeedHolder) currentHolder;
               FrameLayout videoPlayerContainer = currentVideoHolder.videoPlayerContainer;
@@ -228,7 +258,7 @@ public class VideoFeedActivity extends BaseActivity implements ActionBarClickLis
               currentVideoHolder.firstFrameLayout.setVisibility(View.GONE);
 
               // 获取播放进度
-              VideoFeedBean videoFeedBean = videoFeedDataList.get(currentPosition);
+              VideoFeedBean videoFeedBean = videoFeedDataList.get(currentIndex);
               long videoProgress = videoFeedBean.videoProgress;
               long duration = videoFeedBean.duration;
 
@@ -243,6 +273,39 @@ public class VideoFeedActivity extends BaseActivity implements ActionBarClickLis
 
 
           }
+
+
+    }
+
+
+    /**
+     * 滑动停止上一个播放器
+     * @param playerPosition
+     */
+    public void scrollAutoStopPlayer(int playerPosition){
+
+        RecycleViewAdapter.VideoFeedHolder childViewHolder = (RecycleViewAdapter.VideoFeedHolder) recyclerView.findViewHolderForAdapterPosition(playerPosition);
+        if (childViewHolder != null) {
+//            if (lVideoView.isPlayer()) { // 如果正在播放，则停止并记录播放进度，否则不调用这个方法
+            /*滑动停止上一个播放器*/
+            videoPlayerView.scrollAutoStopPlayer();
+
+            /*更新进度*/
+            VideoFeedBean itemBean = videoFeedDataList.get(playerPosition);
+            itemBean.videoProgress = currentPosition;
+            itemBean.duration = duration;
+
+             /*显示第一帧图像*/
+            childViewHolder.showFirstFrameImage(true);
+
+//            }
+            childViewHolder.showMaskView();//显示蒙层
+            View itemView = childViewHolder.itemView;
+            FrameLayout videoPlayerContainer = (FrameLayout) itemView.findViewById(R.id.fl_video_player);
+            videoPlayerContainer.removeAllViews();
+
+        }
+
 
 
     }
@@ -264,33 +327,47 @@ public class VideoFeedActivity extends BaseActivity implements ActionBarClickLis
 
         for (int i = 0 ; i< visibleItemCount ;i++){
             View childView = recyclerView.getChildAt(i);
-            RecyclerView.ViewHolder holder = recyclerView.getChildViewHolder(childView);
-            childView.getGlobalVisibleRect(lightVideoFeedRect);
+            View maskView = childView.findViewById(R.id.v_video_mask);
 
+            /*先设置每个都显示蒙版*/
+            maskView.setVisibility(View.VISIBLE);
+            /*if (maskView.getVisibility() == View.GONE && !maskStatusChanged){
+                showHolderMask(maskView);
+            }*/
+
+            childView.getGlobalVisibleRect(lightVideoFeedRect);
+            RecyclerView.ViewHolder holder = recyclerView.getChildViewHolder(childView);
             if (lightVideoFeedRect.top < threshold && threshold < lightVideoFeedRect.bottom){
 
                 Log.e("videoFeedLight","当前亮起的Item： "+ (i+firstItemPosition));
-                currentPosition = i+firstItemPosition;
+                indexInScreen = i;
+                currentIndex = i+firstItemPosition;
                 currentHolder =  holder;
-                break;
             }
         }
 
         if (currentHolder == null){
             return;
         }
-        /*蒙版显示*/
-        if (previousHolder != null){
-            if (previousHolder != currentHolder && previousHolder instanceof RecycleViewAdapter.VideoFeedHolder){
-                showHolderMask(((RecycleViewAdapter.VideoFeedHolder)previousHolder).viewMask);
-            }
-        }
+        /*隐藏当前蒙版*/
+        currentIndex = (firstItemPosition + indexInScreen);
+        View maskView = recyclerView.getChildAt(indexInScreen).findViewById(R.id.v_video_mask);
+        maskView.setVisibility(View.GONE);
+        /*if (maskView.getVisibility() == View.VISIBLE && !maskStatusChanged){
+            hideHolderMask(maskView);
+        }*/
 
-        /*蒙版消失*/
-        if (((RecycleViewAdapter.VideoFeedHolder)currentHolder).viewMask.getVisibility() == View.VISIBLE){
+        if (playerIndex == currentIndex) {//没有滑动到下一个
+            // noting to do
+            maskStatusChanged = true;
 
-            hideHolderMask(((RecycleViewAdapter.VideoFeedHolder)currentHolder).viewMask);
-            previousHolder = currentHolder;
+        } else { // 说明亮起的已经不是当前的item了，是下一个或者之前的那个，我们停止变暗的item的播放
+
+            maskStatusChanged = false;
+
+
+            scrollAutoStopPlayer(playerIndex);
+            playerIndex = currentIndex;
         }
 
     }
@@ -312,7 +389,7 @@ public class VideoFeedActivity extends BaseActivity implements ActionBarClickLis
         }
 
         AlphaAnimation alphaAnimation =new AlphaAnimation(0.0f,1.0f);
-        alphaAnimation.setDuration(100);
+        alphaAnimation.setDuration(50);
         alphaAnimation.setFillAfter(false);
         alphaAnimation.setAnimationListener(new Animation.AnimationListener() {
             @Override
@@ -352,7 +429,7 @@ public class VideoFeedActivity extends BaseActivity implements ActionBarClickLis
             view.setAnimation(null);
         }
         AlphaAnimation alphaAnimation =new AlphaAnimation(1.0f,0.0f);
-        alphaAnimation.setDuration(100);
+        alphaAnimation.setDuration(80);
         alphaAnimation.setFillAfter(false);
         alphaAnimation.setAnimationListener(new Animation.AnimationListener() {
             @Override

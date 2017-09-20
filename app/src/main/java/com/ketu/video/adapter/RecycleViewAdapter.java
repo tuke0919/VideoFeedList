@@ -136,7 +136,7 @@ public class RecycleViewAdapter extends RecycleViewBaseAdapter<VideoFeedBean> {
        public void onRefreshView(VideoFeedBean videoFeedBean, int position) {
 
            /*刷新数据*/
-           Log.e("onRefreshView","----------position--"+position+"--------："+ viewMask.getVisibility());
+           Log.e("onRefreshView","----------indexInScreen--"+position+"--------："+ viewMask.getVisibility());
 
           /* if (videoFeedBean.video_thumb_pic == null){
                Log.e("frame","video路径："+videoFeedBean.videoUrl);
@@ -163,9 +163,24 @@ public class RecycleViewAdapter extends RecycleViewBaseAdapter<VideoFeedBean> {
         public void onClick(View v) {
             switch (v.getId()) {
 
-
             }
 
+        }
+
+
+        /**
+         * 显示蒙版
+         */
+        public void  showMaskView(){
+            viewMask.setVisibility(View.VISIBLE);
+        }
+
+        /**
+         * 显示隐藏第一帧图像
+         */
+        public void showFirstFrameImage(boolean show){
+
+            firstFrameLayout.setVisibility(show ? View.VISIBLE: View.GONE);
         }
 
     }

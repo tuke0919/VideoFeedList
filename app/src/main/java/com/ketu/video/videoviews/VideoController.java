@@ -524,6 +524,7 @@ public class VideoController extends FrameLayout implements IMediaController,Vie
     /*隐藏控件，隐藏时不再实时更新进度*/
     @Override
     public void hide() {
+
         Log.e("onPrepared","隐藏控制器");
         if (getVisibility() == View.VISIBLE){
             //handler.removeMessages(REALTIME_UPDATE_UI_PROGRESS);
